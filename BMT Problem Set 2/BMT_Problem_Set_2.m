@@ -47,9 +47,9 @@ for i=1:length(K_1)
     end
 end
 
-latex_table = latex(vpa(sym(100*IV),5))
-
 fprintf('\nMax error when finding the implied vol: %e\n',max(fval,[],'all'))
+
+fprintf('\nImplied Volatilities:\n'); IV
 
 %% II. Plot the implied volatility surface
 
@@ -90,13 +90,15 @@ end
 % J and J+1 are identical up to machine precision (eps)
 J = find((Call_Merton(2:end) - Call_Merton(1:end-1)) < eps == 1,1);
 
-fprintf('\nTruncation level required: %d\n',J)
+fprintf('\nTruncation level required: J = %d\n',J)
 
 %% II. Plots displaying the implied volatility as a function of strike
 
 maturity = {"1 week","1 month","3 months","6 months"};
 
 figure
+
+Call_Merton = zeros(length(K),length(T));
 
 for t = 1:length(T)
     
@@ -106,10 +108,10 @@ for t = 1:length(T)
     for k = 1:length(K)
         
         % Use the function Merton_price:
-        Call_Merton = Merton_Price(S,K(k),r,T(t),sigma,lambda_Q,gamma,J);
+        Call_Merton(k,t) = Merton_Price(S,K(k),r,T(t),sigma,lambda_Q,gamma,J);
         
         % Compute the implied volatility thanks to the function blsimpv
-        imp_vol(k) = blsimpv(S,K(k),r,T(t),Call_Merton);
+        imp_vol(k) = blsimpv(S,K(k),r,T(t),Call_Merton(k,t));
     
     end
     
@@ -119,5 +121,7 @@ for t = 1:length(T)
     xlabel('K'); ylabel('Implied Volatility'); ylim([0.19 0.33]);
     title(sprintf('T = %s',maturity{t}))
 end
+
+fprintf('\nCall Option Prices:\n'); Call_Merton
 
 suptitle('Exercise 2: Implied Volatility for different maturities')
