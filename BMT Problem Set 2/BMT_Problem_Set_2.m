@@ -59,6 +59,7 @@ zlabel('Implied volatility'); ylabel('Strike'); xlabel('Time to maturity')
 set(gca, 'YDir','reverse'); view(-60,15)
 zlim([0.98 * min(IV,[],'all'),1.02 * max(IV,[],'all')])
 suptitle('Exercise 1: Implied Volatility Surface')
+
 %=========================================================================%
 %================================ Exercise 2 =============================%
 %=========================================================================%
