@@ -1,4 +1,4 @@
-function [C,P]= BS_price(S_0,K,r,T,sigma,delta)
+function [C,P]= BS_Price(S_0,K,r,T,sigma,delta)
 
 %=========================================================================%
 %============== Black-Scholes Formula for vanilla options ================%
