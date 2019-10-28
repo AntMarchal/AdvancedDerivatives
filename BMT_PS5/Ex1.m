@@ -6,19 +6,26 @@ data=xlsread('SX5E_Impliedvols.xlsx');
 
 
 S0=2772.7; %initial price
-K=data(2:end,1)*S0; %strikes
-T=[data(1,2:end)]; %time to maturities (add T=0)
-dK=K(2)-K(1);
-vol=data(2:end,2:end);
-vol_tilde=diag(K)*data(2:end,2:end);%sigma_tilde=K.sigma
 
-%sigma=zeros(size(vol));
-r=0;
-q=0;
+K=data(2:end,1)*S0; %strikes
+
+T=[data(1,2:end)]; %time to maturities
+
+dK=K(2)-K(1); % Step size for the strikes 
+
+vol=data(2:end,2:end);
+
+vol_tilde=diag(K)*data(2:end,2:end);
+
+% Interest and dividend 
+r=0; q=0;
 
 %% Compute the known prices using BS and the known volatilities
+
 C0=max(S0-K,0);
+
 C_obs=zeros(length(K),length(T));
+
 for i=1:length(K)
     for j=1:length(T)
         if vol(i,j)~=0
@@ -28,16 +35,17 @@ for i=1:length(K)
         end
     end
 end
-      
 
 %% Estimates the volatilities of the A matices, then compute all the call prices
 
+% Setup
 vol_est=zeros(size(vol));
+
 C_models=zeros(size(C_obs));
-fvals=zeros(length(T),1);
-dT=[T(1),diff(T)];
-Cj_1=C0;
-len=length(C0);
+
+fvals=zeros(length(T),1); 
+
+dT=[T(1),diff(T)]; Cj_1 = C0; len=length(C0);
 for i=1:length(T)
     para0 = nonzeros(vol_tilde(:,i)); %first guess corresponding to the observed volatilities
     UB = ones(1,length(para0))*S0; % Upper bound for sigma<S0
