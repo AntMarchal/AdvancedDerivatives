@@ -21,8 +21,11 @@ Price = zeros(length(N_MC),2); Std = zeros(length(N_MC),2);
 
 for j = 1:length(N_MC)
     
+% Boolean to show a histogram for the distribution of S_T and A_T
+show = (j == length(N_MC));
+
 % Please refer to the function LSMC_Price for further details
-[Price(j,1),Std(j,1)] = LSMC(S_0,K,r,q,sigma,t,t,dt,N_MC(j),N_sim);
+[Price(j,1),Std(j,1)] = LSMC(S_0,K,r,q,sigma,t,t,dt,N_MC(j),N_sim,show);
 end
 
 %% II. Least-Square Monte Carlo with Local Volatilities
@@ -48,11 +51,10 @@ end
 dt_M = 1/12; t_M = round(dt_M:dt_M:1,12);
 
 % Interpolate the local volatilities on the time grid
-sigma_M = interp1(TTM,Local_Vol,t_M);
+sigma_M = interp1(TTM,Local_Vol,t_M)
 
 for j = 1:length(N_MC)
-    
-[Price(j,2),Std(j,2)] = LSMC(S_0,K,r,q,sigma_M,t_M,t,dt_M,N_MC(j),N_sim);
+[Price(j,2),Std(j,2)] = LSMC(S_0,K,r,q,sigma_M,t_M,t,dt_M,N_MC(j),N_sim,~show);
 end
 
 %% III. Results
