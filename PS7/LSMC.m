@@ -1,4 +1,4 @@
-function [Price,Std] = LSMC(S_0,K,r,q,sigma,t,t_ex,dt,N_MC,N_sim,show)
+function [Price,Std] = LSMC(S_0,K,r,q,sig,t,t_ex,dt,N_MC,N_sim,show,int)
 
 %=========================================================================%
 % Least-Square Monte Carlo Method                                         %
@@ -8,7 +8,7 @@ function [Price,Std] = LSMC(S_0,K,r,q,sigma,t,t_ex,dt,N_MC,N_sim,show)
 % K     : Strike                                                          %
 % r     : Interest Rate                                                   %
 % q     : Dividend Yield                                                  %
-% sigma : Array of local volatilities                                     %
+% sig   : Array of local volatilities                                     %
 % t     : Simulation dates                                                %
 % t_ex  : Exercise dates                                                  %
 % dt    : Time step for the simulations                                   %
@@ -28,24 +28,37 @@ Prices = zeros(N_sim,1);
 for s = 1:N_sim 
     
 % Trajectories
-S = S_0 * cumprod(1 + (r-q)*dt + sqrt(dt)*sigma.*randn(N_MC,N_t),2);
+S = S_0 * cumprod(1 + (r-q)*dt + sqrt(dt)*sig.*randn(N_MC,N_t),2);
 
 % Moving average of the stock prices
 A = movmean(S,[N_t 0],2);
 
-if show
+if show >= 1
+    
+    % Display path trajectories
+    figure; subplot(2,1,1);
+    plot([0,t],[repmat(S_0,30,1),S(1:30,:)],'Linewidth',1.2) 
+    title('S: Stock price')
+   
+    subplot(2,1,2); 
+    plot([0,t],[repmat(S_0,30,1),A(1:30,:)],'Linewidth',1.2)
+    title('A: Running mean of the stock price');
+    suptitle("Trajectories of S and A, " + int)
+   
+end
+    
+if show == 2 
     
     % histogram for the distribution of A_T and S_T
     figure 
-
-    histogram(A(:,end),100,'Normalization','pdf'); hold on
-    histogram(S(:,end),100,'Normalization','pdf')
+    histogram(A(:,end),floor(N_MC^(1/3)),'Normalization','pdf'); hold on
+    histogram(S(:,end),floor(N_MC^(1/3)),'Normalization','pdf')
     xlabel('Terminal Value')
     title('Distribution of S_T and A_T')
-    legend('A_T','S_T')
+    legend('A_T','S_T')      
 end 
 
-show = false; 
+show = 0; 
 
 % Indices of t where one can exercise the option
 id_ex = find(ismember(t,t_ex));
