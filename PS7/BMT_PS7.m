@@ -36,6 +36,7 @@ end
 % Get the adequate local volatilities from the previous assignment 
 data = readtable('Volatility_Surface.csv');
 
+% Extract the local volatilities for the corresponding moneyness
 Local_Vol = data{data{:,'K_over_S'} == K/S_0,2:end}';
 
 N_Vol = length(Local_Vol);

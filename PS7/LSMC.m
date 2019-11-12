@@ -27,7 +27,7 @@ Prices = zeros(N_sim,1);
 
 for s = 1:N_sim 
     
-% Trajectories
+% Trajectories (Euler-Maruyama Scheme)
 S = S_0 * cumprod(1 + (r-q)*dt + sqrt(dt)*sig.*randn(N_MC,N_t),2);
 
 % Moving average of the stock prices
@@ -78,7 +78,7 @@ CF(:,end) = Int_Values(:,end);
 for k = N_ex-1:-1:1
     
     % Row indices where the intrisic value is positive at time k
-    id = find(Int_Values(:,k) >= 0);
+    id = find(Int_Values(:,k) > 0);
     
     % Design Matrix
     X = [ones(length(id),1),S(id,k),S(id,k).^2,S(id,k).^3];
@@ -94,12 +94,12 @@ for k = N_ex-1:-1:1
     Cont_Values =  X * ((X'*X)\(X'*Y));
     
     % Get the indices where it is better to exercise
-    id_ex = find(Int_Values(id,k) >= Cont_Values);
+    id_ex = find(Int_Values(id,k) > Cont_Values);
     
     % Add the corresponding intrisic values in the cash flow matrix
     CF(id(id_ex),k) = Int_Values(id(id_ex),k);
     
-    % Set all future cash flows to 0 when we exercise at time k
+    % Set all future cash flows to 0 when the option is exercised at time k
     CF(id(id_ex),k+1:end) = 0;
     
 end
