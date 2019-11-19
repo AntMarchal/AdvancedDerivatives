@@ -18,8 +18,10 @@ T2      = 5+T1;
 
 %% Analytical Solution
 
-B = (1 - exp(-k*(T2-T1)))/k;
+B = (1 - exp(-k*(T2-T1)))/k
+
 sig_tilde = sigma_r * sqrt((1-exp(-2*k*T1))/(2*k)) * B;
+
 h = 1/sig_tilde * log(ZC(T2, r0, k, theta, sigma_r)...
     /(ZC(T1, r0, k, theta, sigma_r)*K)) + sig_tilde/2;
 
@@ -35,9 +37,11 @@ r_min = 0;
 %Initial boundary condition
 initial_cond = @(r) max(0,K-ZC(T2-T1,r,k,theta,sigma_r));
 %Left boundary condition
-bc_left = 0;
+bc_left = @(tau) 0;
 %Right boundary condition
-bc_right = K-ZC(T2-T1,r_max,k,theta,sigma_r);
+bc_right = @(tau) K * ZC(tau,r_max,k,theta,sigma_r)...
+         - ZC(T2-T1,r_max,k,theta,sigma_r);
+%ZC(T2-T1,r_max,k,theta,sigma_r)
 
 
 %% Rate of convergence with respect to the space grid
@@ -71,8 +75,6 @@ for i=1:length(N_rs)
     
     
 end
-
-
 
 %% Plot 1 analyse of convergence with respect to the space grid
 figure(1);
@@ -145,6 +147,7 @@ function  P = ZC(tau,r,k,theta,sigma)
 
 B = (1 - exp(-k*tau))/k;
 A = exp((theta - sigma^2/(2*k^2))*(B - tau) - sigma^2/(4*k)*B^2);
+
 
 P = A*exp(-B*r);
 end

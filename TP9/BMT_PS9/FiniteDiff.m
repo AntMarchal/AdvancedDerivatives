@@ -63,7 +63,9 @@ A_up   = -sigma^2/(2*dr^2) - k*(theta-r_up)/(2*dr);
 A_main = sigma^2/dr^2 + r;
 A_down = -sigma^2/(2*dr^2) + k*(theta-r_down)/(2*dr);
 
-A = spdiags([NaN; A_up],1,N_r-1,N_r-1) + spdiags(A_main,0,N_r-1,N_r-1) + spdiags([A_down; NaN],-1,N_r-1,N_r-1);
+A = spdiags([NaN; A_up],1,N_r-1,N_r-1)...
+  + spdiags(A_main,0,N_r-1,N_r-1)...
+  + spdiags([A_down; NaN],-1,N_r-1,N_r-1);
 
 %Matrix B = [ I + deltat*theta A]
 
@@ -71,19 +73,18 @@ B_up   = dt*nu*(A_up);
 B_main = dt*nu*(A_main) + ones(N_r-1,1);
 B_down = dt*nu*(A_down);
 
-% Vector F
-F = [zeros(N_r-2,1);(sigma^2/(2*dr^2) + k*(theta-r(end))/(2*dr))*bc_right];
-
 
 % time-stepping loop. 
 
-
 for tn = 1:N_t
     
+    % Vector F
+    F = [zeros(N_r-2,1);(sigma^2/(2*dr^2)...
+      + k*(theta-r(end))/(2*dr)) * bc_right(tn*dt)];
+
     % we need to solve the linear system
-    % B H_new = f_tot
-    % with
-    % B = [ I + deltat*theta A ] 
+    % B H_new = f_tot, with
+    % B = [ I + deltat*theta A ], 
     % f_tot = H_old - deltat*(1-theta) A H_old ]
 
     f_tot = V(2:end-1,tn) - dt*(1-nu)*A*V(2:end-1,tn)+dt*F;
@@ -94,7 +95,7 @@ for tn = 1:N_t
     % Thomas algorithm
     
     sol = thomas(B_down,B_main,B_up,f_tot);
-    V(:,tn+1)=[bc_left;sol; bc_right];
+    V(:,tn+1)=[bc_left(tn*dt);sol; bc_right(tn*dt)];
 
 end
 end
