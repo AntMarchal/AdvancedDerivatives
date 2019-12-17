@@ -1,4 +1,4 @@
-clear all
+clear 
 close all
 clc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -15,9 +15,9 @@ T_N = 4;
 sigma = [ones(1,7)*0.2, ones(1,4)*0.22, ones(1,5)*0.24];
 
 %% Paths simulation and intrinsic value of swap
-Nsim = 1e4;
-N_x = length(dt:dt:T_x);
-N = length(dt:dt:T_N);
+Nsim = 2*1e4;
+
+N_x = length(dt:dt:T_x); N = length(dt:dt:T_N);
 
 [F_paths,V] = PathSimulation(Nsim,N_x,N,dt,sigma,T_s,K);
 
@@ -78,7 +78,7 @@ for i=1:4
     V_2 = CF;
 end
 
-fprintf("Price of the Swaption: %2.4f\n",mean(CF))
+fprintf("Price of the Swaption: %2.3f bps\n",1e4*mean(CF))
 
 %% Supporting Functions
 
