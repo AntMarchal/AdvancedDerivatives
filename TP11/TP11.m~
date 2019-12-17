@@ -15,7 +15,7 @@ T_N = 4;
 sigma = [ones(1,7)*0.2, ones(1,4)*0.22, ones(1,5)*0.24];
 
 %% Paths simulation and intrinsic value of swap
-Nsim = 1e4;
+Nsim = 10;
 N_x = length(dt:dt:T_x);
 N = length(dt:dt:T_N);
 
@@ -78,7 +78,7 @@ for i=1:4
     V_2 = CF;
 end
 
-fprintf("Price of the Swaption: %2.4f\n",mean(CF))
+SwaptionPrice = mean(CF)
 
 %% Supporting Functions
 
@@ -177,8 +177,7 @@ function V = TwoPeriodSwationCF(V_1,V_2,H,DF)
  
  % Discount the second cash flow using F_x(T_{x-1}) as the libor rate
  % L(T_{x-1},T_x)
- CF(exercise_idx(:,end),end) = V_2(exercise_idx(:,end),1)...
-                            .* DF(exercise_idx(:,end),1);
+ CF(exercise_idx(:,end),end) = V_2(exercise_idx(:,end),1).*DF(exercise_idx(:,end),1);
  
  V = sum(CF,2);
 
